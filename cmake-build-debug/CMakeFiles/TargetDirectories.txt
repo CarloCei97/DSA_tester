@@ -1,0 +1,3 @@
+/Users/carlocei/Desktop/DS_A_Tester/cmake-build-debug/CMakeFiles/DS_A_Tester.dir
+/Users/carlocei/Desktop/DS_A_Tester/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/carlocei/Desktop/DS_A_Tester/cmake-build-debug/CMakeFiles/rebuild_cache.dir
