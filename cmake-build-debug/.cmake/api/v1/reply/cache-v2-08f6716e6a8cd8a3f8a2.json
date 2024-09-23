@@ -1152,6 +1152,54 @@
 			],
 			"type" : "STATIC",
 			"value" : "/Users/carlocei/Desktop/DS_A_Tester"
+		},
+		{
+			"name" : "Downsampling_algorithms_test_BINARY_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "/Users/carlocei/Desktop/DS_A_Tester/cmake-build-debug"
+		},
+		{
+			"name" : "Downsampling_algorithms_test_IS_TOP_LEVEL",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "ON"
+		},
+		{
+			"name" : "Downsampling_algorithms_test_SOURCE_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "/Users/carlocei/Desktop/DS_A_Tester"
+		},
+		{
+			"name" : "Matplot++_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "The directory containing a CMake configuration file for Matplot++."
+				}
+			],
+			"type" : "PATH",
+			"value" : "/opt/homebrew/lib/cmake/Matplot++"
 		}
 	],
 	"kind" : "cache",

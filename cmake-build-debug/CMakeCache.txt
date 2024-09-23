@@ -222,6 +222,18 @@ DS_A_Tester_IS_TOP_LEVEL:STATIC=ON
 //Value Computed by CMake
 DS_A_Tester_SOURCE_DIR:STATIC=/Users/carlocei/Desktop/DS_A_Tester
 
+//Value Computed by CMake
+Downsampling_algorithms_test_BINARY_DIR:STATIC=/Users/carlocei/Desktop/DS_A_Tester/cmake-build-debug
+
+//Value Computed by CMake
+Downsampling_algorithms_test_IS_TOP_LEVEL:STATIC=ON
+
+//Value Computed by CMake
+Downsampling_algorithms_test_SOURCE_DIR:STATIC=/Users/carlocei/Desktop/DS_A_Tester
+
+//The directory containing a CMake configuration file for Matplot++.
+Matplot++_DIR:PATH=/opt/homebrew/lib/cmake/Matplot++
+
 
 ########################
 # INTERNAL cache entries

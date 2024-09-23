@@ -261,3 +261,28 @@ double DownsamplingAlgorithms::perpendicularDistance(const std::vector<double>& 
     // Calculate and return the perpendicular distance from the point at 'index' to the line segment
     return std::abs(A * index + B * data[index] + C) / std::sqrt(A * A + B * B);
 }
+
+std::vector<double> DownsamplingAlgorithms::douglasPeuckerBinarySearch(const std::vector<double>& data, int n_out, double initialEpsilon) {
+    double low = 0.0;
+    double high = initialEpsilon;
+    std::vector<double> sampled;
+    int maxIterations = 100;  // Set a limit to prevent infinite looping
+    int iteration = 0;
+    double tolerance = 0.01 * n_out;  // Allow a small tolerance in the number of points
+
+    while (iteration < maxIterations) {
+        iteration++;
+        double epsilon = (low + high) / 2.0;
+        sampled = douglasPeucker(data, n_out, epsilon);
+
+        if (sampled.size() > n_out + tolerance) {
+            low = epsilon;  // Increase epsilon to reduce points
+        } else if (sampled.size() < n_out - tolerance) {
+            high = epsilon;  // Decrease epsilon to retain more points
+        } else {
+            break;  // If within tolerance, break the loop
+        }
+    }
+
+    return sampled;
+}
