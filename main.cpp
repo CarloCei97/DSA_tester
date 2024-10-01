@@ -65,27 +65,33 @@ int main() {
 
     // Perform downsampling using various methods and keeping track of the execution time
     auto start_time = std::chrono::high_resolution_clock::now();
-    auto lttb_sampled = DownsamplingAlgorithms::largestTriangleThreeBuckets(soc, n_out);
+    auto [lttb_sampled_time, lttb_sampled_soc] = DownsamplingAlgorithms::largestTriangleThreeBuckets(time_series, soc, n_out);
     auto lttb_time = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start_time).count();
 
+
+    // Perform downsampling using Min-Max and keeping track of the execution time
     start_time = std::chrono::high_resolution_clock::now();
-    auto minmax_sampled = DownsamplingAlgorithms::minmaxDownsampling(soc, n_out);
+    auto [MinMax_sampled_time, MinMax_sampled_soc] = DownsamplingAlgorithms::minmaxDownsampling(time_series, soc, n_out);
     auto minmax_time = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start_time).count();
 
+    // Perform downsampling using Piecewise Aggregate Approximation and keeping track of the execution time
     start_time = std::chrono::high_resolution_clock::now();
-    auto paa_sampled = DownsamplingAlgorithms::piecewiseAggregateApproximation(soc, n_out);
+    auto [PAA_sampled_time, PAA_sampled_soc] = DownsamplingAlgorithms::piecewiseAggregateApproximation(time_series, soc, n_out);
     auto paa_time = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start_time).count();
 
+    // Perform downsampling using Adaptive PAA and keeping track of the execution time
     start_time = std::chrono::high_resolution_clock::now();
-    auto adaptive_paa_sampled = DownsamplingAlgorithms::adaptivePAA(soc, n_out, variance_threshold);
+    auto [APAA_sampled_time, APAA_sampled_soc] = DownsamplingAlgorithms::adaptivePAA(time_series, soc, n_out, variance_threshold);
     auto adaptive_paa_time = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start_time).count();
 
+    // Perform downsampling using Random Sampling and keeping track of the execution time
     start_time = std::chrono::high_resolution_clock::now();
-    auto random_sampled = DownsamplingAlgorithms::randomSampling(soc, n_out);
-    auto random_time = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start_time).count();
+    auto [Random_sampled_time, Random_sampled_soc] = DownsamplingAlgorithms::randomSampling(time_series, soc, n_out);
+    auto random_sampling_time = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start_time).count();
 
+    // Perform downsampling using Hybrid PAA Min-Max and keeping track of the execution time
     start_time = std::chrono::high_resolution_clock::now();
-    auto hybrid_paa_minmax_sampled = DownsamplingAlgorithms::hybridPAAMinMax(soc, n_out, variance_threshold);
+    auto [hybrid_PAA_MinMax_sampled_time, hybrid_PAA_MinMax_sampled_soc] = DownsamplingAlgorithms::hybridPAAMinMax(time_series, soc, n_out, variance_threshold);
     auto hybrid_paa_minmax_time = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start_time).count();
 
     start_time = std::chrono::high_resolution_clock::now();
@@ -103,12 +109,12 @@ int main() {
     CSVHandler hybridPaaMinMaxHandler("../log/hybrid_paa_minmax_sampled.csv");
     CSVHandler douglasHandler("../log/Douglas_sampled.csv");
     CSVHandler douglasAdaptiveHandler("../log/DouglasAdaptive_sampled.csv");
-    lttbHandler.saveToCSV(time_series, lttb_sampled);
-    minmaxHandler.saveToCSV(time_series, minmax_sampled);
-    paaHandler.saveToCSV(time_series, paa_sampled);
-    adaptivePaaHandler.saveToCSV(time_series, adaptive_paa_sampled);
-    randomHandler.saveToCSV(time_series, random_sampled);
-    hybridPaaMinMaxHandler.saveToCSV(time_series, hybrid_paa_minmax_sampled);
+    lttbHandler.saveToCSV(lttb_sampled_time, lttb_sampled_soc);
+    minmaxHandler.saveToCSV(MinMax_sampled_time, MinMax_sampled_soc);
+    paaHandler.saveToCSV(PAA_sampled_time, PAA_sampled_soc);
+    adaptivePaaHandler.saveToCSV(APAA_sampled_time, APAA_sampled_soc);
+    randomHandler.saveToCSV(Random_sampled_time, Random_sampled_soc);
+    hybridPaaMinMaxHandler.saveToCSV(hybrid_PAA_MinMax_sampled_time, hybrid_PAA_MinMax_sampled_soc);
     douglasHandler.saveToCSV(time_series, Douglas_sampled);
 
     // Plot the signals
@@ -130,7 +136,7 @@ int main() {
     logFile << "Largest Triangle Three Buckets duration: " << lttb_time << " seconds\n";
     logFile << "Min-Max Downsampling duration: " << minmax_time << " seconds\n";
     logFile << "Piecewise Aggregate Approximation duration: " << paa_time << " seconds\n";
-    logFile << "Random Sampling duration: " << random_time << " seconds\n";
+    logFile << "Random Sampling duration: " << random_sampling_time << " seconds\n";
     logFile << "Adaptive PAA duration: " << adaptive_paa_time << " seconds\n";
     logFile << "Hybrid PAA MinMax duration: " << hybrid_paa_minmax_time << " seconds\n";
     logFile << "Douglas sampling duration: " << Douglas_time << " seconds\n";
