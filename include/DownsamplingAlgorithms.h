@@ -11,6 +11,7 @@ public:
     static void generateSyntheticData(std::vector<double>& time_series, std::vector<double>& voltage);
     static std::pair<std::vector<double>, std::vector<double>> largestTriangleThreeBuckets(const std::vector<double>& time_series, const std::vector<double>& soc, int n_out);
     static std::pair<std::vector<double>, std::vector<double>> minmaxDownsampling(const std::vector<double>& time_series, const std::vector<double>& soc, int n_out);
+    static std::pair<size_t, size_t> argminmax (const std::vector<double>& arr,size_t start_idx,size_t end_idx);
     static std::pair<std::vector<double>, std::vector<double>> piecewiseAggregateApproximation(const std::vector<double>& time_series, const std::vector<double>& soc, int n_out);
     static std::pair<std::vector<double>, std::vector<double>> adaptivePAA(const std::vector<double>& time_series, const std::vector<double>& soc, int n_out, double variance_threshold);
     static std::pair<std::vector<double>, std::vector<double>> randomSampling(const std::vector<double>& time_series, const std::vector<double>& soc, int n_out);

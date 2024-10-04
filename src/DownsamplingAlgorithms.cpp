@@ -4,7 +4,9 @@
 #include <cmath>    // Include cmath for mathematical functions like sin()
 #include <algorithm> // Include algorithm for std::min_element, std::max_element, and std::shuffle
 #include <cstdlib>  // Include cstdlib for functions like srand() and rand()
-
+#include <iostream>
+#include <vector>
+#include <cassert>
 // Function to generate synthetic data for time series and voltage
 void DownsamplingAlgorithms::generateSyntheticData(std::vector<double>& time_series, std::vector<double>& voltage) {
     unsigned seed = 42; // Set the seed for random number generation
@@ -39,101 +41,137 @@ void DownsamplingAlgorithms::generateSyntheticData(std::vector<double>& time_ser
 
 // Function to perform Largest Triangle Three Buckets (LTTB) downsampling
 std::pair<std::vector<double>, std::vector<double>> DownsamplingAlgorithms::largestTriangleThreeBuckets(const std::vector<double>& time_series,const std::vector<double>& soc,int n_out) {
-    int n = soc.size(); // Get the size of the input data
-    if (n_out >= n || n_out == 0) {
-        // If the output size is greater than or equal to the input size or zero, return the original data
-        return {time_series, soc};
-    }
+        size_t sourceSize = time_series.size();
 
-    std::vector<double> sampled_time(n_out); // Vector to store the downsampled time points
-    std::vector<double> sampled_soc(n_out);  // Vector to store the downsampled SOC values
-
-    sampled_time[0] = time_series[0]; // Set the first time point
-    sampled_soc[0] = soc[0];          // Set the first SOC value
-    sampled_time[n_out - 1] = time_series[n - 1]; // Set the last time point
-    sampled_soc[n_out - 1] = soc[n - 1];          // Set the last SOC value
-
-    int bucket_size = (n - 2) / (n_out - 2); // Calculate the bucket size based on the input and output size
-
-    // Loop through each bucket to find the best point
-    for (int i = 1; i < n_out - 1; ++i) {
-        int bucket_start = (i - 1) * bucket_size + 1;
-        int bucket_end = i * bucket_size + 1;
-        int next_bucket_start = bucket_end;
-        int next_bucket_end = std::min((i + 1) * bucket_size + 1, n - 1);
-
-        double max_area = -1;
-        int best_idx = 0;
-
-        // Find the point with the largest triangle area
-        for (int j = bucket_start; j < bucket_end; ++j) {
-            for (int k = next_bucket_start; k < next_bucket_end; ++k) {
-                double area = 0.5 * std::abs(
-                        (time_series[j] - time_series[bucket_start]) * (soc[k] - soc[bucket_start]) -
-                        (soc[j] - soc[bucket_start]) * (time_series[k] - time_series[bucket_start])
-                );
-                if (area > max_area) {
-                    max_area = area;
-                    best_idx = j;
-                }
-            }
+        if (n_out >= sourceSize) {
+            // If the requested output size is greater than or equal to the input size, return the original data
+            return {time_series, soc};
         }
 
-        sampled_time[i] = time_series[best_idx]; // Set the best time point for this bucket
-        sampled_soc[i] = soc[best_idx];          // Set the corresponding SOC value for this bucket
-    }
+        if (n_out <= 2) {
+            // If the requested output size is too small, just return the first and last points
+            return { {time_series.front(), time_series.back()}, {soc.front(), soc.back()} };
+        }
 
-    return {sampled_time, sampled_soc}; // Return the downsampled time and SOC data
-}
+        std::vector<double> downsampled_time;
+        std::vector<double> downsampled_soc;
 
+        // Bucket size. Leave room for start and end data points
+        double every = static_cast<double>(sourceSize - 2) / (n_out - 2);
+
+        size_t aIndex = 0;  // Initially 'a' is the first point
+
+        // Always add the first point
+        downsampled_time.push_back(time_series[0]);
+        downsampled_soc.push_back(soc[0]);
+
+        for (size_t i = 0; i < n_out - 2; ++i) {
+            // Calculate point average for the next bucket (containing 'c')
+            double avgX = 0;
+            double avgY = 0;
+            size_t avgRangeStart = static_cast<size_t>((i + 1) * every) + 1;
+            size_t avgRangeEnd = static_cast<size_t>((i + 2) * every) + 1;
+            if (avgRangeEnd > sourceSize) {
+                avgRangeEnd = sourceSize;
+            }
+
+            size_t avgRangeLength = avgRangeEnd - avgRangeStart;
+
+            for (size_t j = avgRangeStart; j < avgRangeEnd; ++j) {
+                avgX += time_series[j];
+                avgY += soc[j];
+            }
+            avgX /= avgRangeLength;
+            avgY /= avgRangeLength;
+
+            // Get the range for this bucket
+            size_t rangeOffs = static_cast<size_t>(i * every) + 1;
+            size_t rangeTo = static_cast<size_t>((i + 1) * every) + 1;
+
+            double pointAX = time_series[aIndex];
+            double pointAY = soc[aIndex];
+
+            double maxArea = -1;
+            size_t nextAIndex = 0;
+
+            // Find the point that forms the largest triangle with the current point 'a' and the averaged next bucket
+            for (size_t j = rangeOffs; j < rangeTo; ++j) {
+                double area = std::abs(
+                        (pointAX - avgX) * (soc[j] - pointAY) -
+                        (pointAX - time_series[j]) * (avgY - pointAY)
+                );
+
+                if (area > maxArea) {
+                    maxArea = area;
+                    nextAIndex = j;  // Next 'a' is this 'b'
+                }
+            }
+
+            // Add the point forming the largest triangle
+            downsampled_time.push_back(time_series[nextAIndex]);
+            downsampled_soc.push_back(soc[nextAIndex]);
+
+            // Update the index for the next 'a'
+            aIndex = nextAIndex;
+        }
+
+        // Always add the last point
+        downsampled_time.push_back(time_series.back());
+        downsampled_soc.push_back(soc.back());
+
+    return {downsampled_time, downsampled_soc};
+};
+
+
+// minmax downsampling
 std::pair<std::vector<double>, std::vector<double>> DownsamplingAlgorithms::minmaxDownsampling(
         const std::vector<double>& time_series,
         const std::vector<double>& soc,
         int n_out
 ) {
-    int n = soc.size(); // Get the size of the input data
-    if (n_out >= n || n_out == 0) {
-        // If the output size is greater than or equal to the input size or zero, return the original data
+    assert(n_out % 2 == 0);
+
+    // If the output size is greater than or equal to the input size, return the original vectors
+    if (n_out >= soc.size()) {
         return {time_series, soc};
     }
 
-    std::vector<double> sampled_time; // Vector to store the downsampled time points
-    std::vector<double> sampled_soc;  // Vector to store the downsampled SOC values
+    std::vector<double> sampled_time;
+    std::vector<double> sampled_soc;
+    size_t block_size = (soc.size() - 1) / (n_out / 2);
 
-    // Calculate the bucket size based on the input and output size
-    int bucket_size = n*5 / n_out;  //I added *5 cause the buckets were too small and the signal was trimmed.
+    size_t start_idx = 0;
+    for (int i = 0; i < n_out / 2; ++i) {
+        size_t end_idx = std::min(start_idx + block_size, soc.size() - 1);
 
-    // Loop through each bucket to find the minimum and maximum values
-    for (int i = 0; i < n; i += bucket_size) {
-        auto bucket_start_time = time_series.begin() + i;
-        auto bucket_end_time = (i + bucket_size < n) ? bucket_start_time + bucket_size : time_series.end();
+        auto [min_index, max_index] = argminmax(soc, start_idx, end_idx);
 
-        auto bucket_start_soc = soc.begin() + i;
-        auto bucket_end_soc = (i + bucket_size < n) ? bucket_start_soc + bucket_size : soc.end();
+        if (min_index < max_index) {
+            sampled_time.push_back(time_series[min_index]);
+            sampled_soc.push_back(soc[min_index]);
+            sampled_time.push_back(time_series[max_index]);
+            sampled_soc.push_back(soc[max_index]);
+        } else {
+            sampled_time.push_back(time_series[max_index]);
+            sampled_soc.push_back(soc[max_index]);
+            sampled_time.push_back(time_series[min_index]);
+            sampled_soc.push_back(soc[min_index]);
+        }
 
-        // Find the min and max SOC values and their corresponding time points
-        auto min_it = std::min_element(bucket_start_soc, bucket_end_soc);
-        auto max_it = std::max_element(bucket_start_soc, bucket_end_soc);
-
-        // Calculate the indices for the min and max SOC values
-        int min_index = std::distance(soc.begin(), min_it);
-        int max_index = std::distance(soc.begin(), max_it);
-
-        // Add the corresponding time and SOC values to the sampled vectors
-        sampled_time.push_back(time_series[min_index]);
-        sampled_soc.push_back(*min_it);
-
-        sampled_time.push_back(time_series[max_index]);
-        sampled_soc.push_back(*max_it);
+        start_idx = end_idx;
     }
 
-    // If the sampled data exceeds the output size, trim it to match n_out
-    while (sampled_time.size() > n_out) {
-        sampled_time.pop_back();
-        sampled_soc.pop_back();
-    }
+    return {sampled_time, sampled_soc};
+}
 
-    return {sampled_time, sampled_soc}; // Return the downsampled time and SOC data
+std::pair<size_t, size_t> DownsamplingAlgorithms::argminmax(
+        const std::vector<double>& arr,
+        size_t start_idx,
+        size_t end_idx
+) {
+    auto min_it = std::min_element(arr.begin() + start_idx, arr.begin() + end_idx);
+    auto max_it = std::max_element(arr.begin() + start_idx, arr.begin() + end_idx);
+    return {std::distance(arr.begin(), min_it), std::distance(arr.begin(), max_it)};
 }
 
 

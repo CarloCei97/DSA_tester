@@ -46,7 +46,7 @@ double timePointToDouble(const std::chrono::system_clock::time_point& tp) {
 
 int main() {
     const int n_out = 2000;
-    const double variance_threshold = 5;
+    const double variance_threshold = 10;
     const double epsilon = 0.5;
 
     // Read data from CSV file
