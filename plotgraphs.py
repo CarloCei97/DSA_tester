@@ -43,13 +43,13 @@ for sampled_file in sampled_files:
         fig, axs = plt.subplots(2, 1, figsize=(10, 10), sharex=True)
 
         # First subplot for the original signal
-        axs[0].plot(df1['time'], df1['soc'], marker='o', linestyle='-', color='b')
+        axs[0].plot(df1['time'], df1['soc'], marker=' ', linestyle='-', color='b')
         axs[0].set_title(f'SOC vs. Time (Original Signal)')
         axs[0].set_ylabel('SOC')
         axs[0].grid(True)
 
         # Second subplot for the sampled signal
-        axs[1].plot(df2['Time'], df2['SoC'], marker='o', linestyle='-', color='r')
+        axs[1].plot(df2['Time'], df2['SoC'], marker=' ', linestyle='-', color='r')
         axs[1].set_title(f'SOC vs. Time (Sampled Signal - {formatted_title})')
         axs[1].set_xlabel('Time')
         axs[1].set_ylabel('SOC')

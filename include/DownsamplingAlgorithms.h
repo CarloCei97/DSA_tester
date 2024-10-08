@@ -12,12 +12,11 @@ public:
     static std::pair<std::vector<double>, std::vector<double>> largestTriangleThreeBuckets(const std::vector<double>& time_series, const std::vector<double>& soc, int n_out);
     static std::pair<std::vector<double>, std::vector<double>> minmaxDownsampling(const std::vector<double>& time_series, const std::vector<double>& soc, int n_out);
     static std::pair<size_t, size_t> argminmax (const std::vector<double>& arr,size_t start_idx,size_t end_idx);
-    static std::pair<std::vector<double>, std::vector<double>> piecewiseAggregateApproximation(const std::vector<double>& time_series, const std::vector<double>& soc, int n_out);
-    static std::pair<std::vector<double>, std::vector<double>> adaptivePAA(const std::vector<double>& time_series, const std::vector<double>& soc, int n_out, double variance_threshold);
+    static std::pair<std::vector<double>, std::vector<double>> piecewiseAggregateApproximation(const std::vector<double>& time_series,const std::vector<double>& soc,int n_out);
+    static std::pair<std::vector<double>, std::vector<std::pair<double, double>>> piecewiseLinearAggregateApproximation(const std::vector<double>& time_series,const std::vector<double>& soc,int n_out);
     static std::pair<std::vector<double>, std::vector<double>> randomSampling(const std::vector<double>& time_series, const std::vector<double>& soc, int n_out);
-    static std::pair<std::vector<double>, std::vector<double>> hybridPAAMinMax(const std::vector<double>& time_series, const std::vector<double>& soc, int n_out, double variance_threshold);
+    // Douglas-Peucker algorithm method
     static std::vector<double> douglasPeuckerBinarySearch(const std::vector<double>& data, int n_out, double initialEpsilon);
-        // Douglas-Peucker algorithm method
     static std::vector<double> douglasPeucker(const std::vector<double>& data, int n_out, double epsilon);
 
 private:

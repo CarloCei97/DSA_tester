@@ -38,7 +38,9 @@ void DownsamplingAlgorithms::generateSyntheticData(std::vector<double>& time_ser
         voltage[i] -= 5;
     }
 }
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////// LTTB ////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Function to perform Largest Triangle Three Buckets (LTTB) downsampling
 std::pair<std::vector<double>, std::vector<double>> DownsamplingAlgorithms::largestTriangleThreeBuckets(const std::vector<double>& time_series,const std::vector<double>& soc,int n_out) {
         size_t sourceSize = time_series.size();
@@ -122,8 +124,9 @@ std::pair<std::vector<double>, std::vector<double>> DownsamplingAlgorithms::larg
     return {downsampled_time, downsampled_soc};
 };
 
-
-// minmax downsampling
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////// MinMax ////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 std::pair<std::vector<double>, std::vector<double>> DownsamplingAlgorithms::minmaxDownsampling(
         const std::vector<double>& time_series,
         const std::vector<double>& soc,
@@ -174,9 +177,40 @@ std::pair<size_t, size_t> DownsamplingAlgorithms::argminmax(
     return {std::distance(arr.begin(), min_it), std::distance(arr.begin(), max_it)};
 }
 
-
-// PAA algorithm
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////// PAA algorithm ////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Method for Piecewise Aggregate Approximation
 std::pair<std::vector<double>, std::vector<double>> DownsamplingAlgorithms::piecewiseAggregateApproximation(
+    const std::vector<double>& time_series,
+    const std::vector<double>& soc,
+    int n_out
+) {
+    int n = time_series.size();
+    std::vector<double> reduced_time_series(n_out, 0.0);
+    std::vector<double> reduced_soc(n_out, 0.0);
+    int frameSize = n / n_out;
+
+    // Calculate the mean of each frame for time series and soc
+    // the mean of the time series equals the center
+    for (int i = 0; i < n_out; ++i) {
+        double sum_time_series = 0.0;
+        double sum_soc = 0.0;
+
+        for (int j = 0; j < frameSize; ++j) {
+            sum_time_series += time_series[i * frameSize + j];
+            sum_soc += soc[i * frameSize + j];
+        }
+        reduced_time_series[i] = sum_time_series / frameSize;
+        reduced_soc[i] = sum_soc / frameSize;
+    }
+
+    return {reduced_time_series, reduced_soc};
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////// PLAA ////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+std::pair<std::vector<double>, std::vector<std::pair<double, double>>> DownsamplingAlgorithms::piecewiseLinearAggregateApproximation(
         const std::vector<double>& time_series,
         const std::vector<double>& soc,
         int n_out
@@ -184,92 +218,55 @@ std::pair<std::vector<double>, std::vector<double>> DownsamplingAlgorithms::piec
     int n = soc.size(); // Get the size of the input data
     if (n_out >= n || n_out == 0) {
         // If the output size is greater than or equal to the input size or zero, return the original data
-        return {time_series, soc};
+        std::vector<std::pair<double, double>> soc_with_slopes;
+        for (size_t i = 0; i < soc.size(); ++i) {
+            soc_with_slopes.emplace_back(soc[i], 0.0); // Assume slope is 0 for original data
+        }
+        return {time_series, soc_with_slopes};
     }
 
     std::vector<double> sampled_time(n_out); // Vector to store the downsampled time points
-    std::vector<double> sampled_soc(n_out);  // Vector to store the downsampled SOC values
+    std::vector<std::pair<double, double>> sampled_soc(n_out);  // Vector to store the downsampled SOC values and slopes
 
     int bucket_size = n / n_out; // Calculate the bucket size based on the input and output size
 
-    // Loop through each bucket to calculate the average time point and SOC value
+    // Loop through each bucket to calculate the average time point, SOC value, and slope
     for (int i = 0; i < n_out; ++i) {
         // Calculate average time in the bucket
         sampled_time[i] = std::accumulate(time_series.begin() + i * bucket_size,
                                           time_series.begin() + (i + 1) * bucket_size, 0.0) / bucket_size;
 
         // Calculate average SOC in the bucket
-        sampled_soc[i] = std::accumulate(soc.begin() + i * bucket_size,
-                                         soc.begin() + (i + 1) * bucket_size, 0.0) / bucket_size;
+        double mean_soc = std::accumulate(soc.begin() + i * bucket_size,
+                                          soc.begin() + (i + 1) * bucket_size, 0.0) / bucket_size;
+
+        // Calculate slope (linear regression) in the bucket
+        double sum_x = 0.0;
+        double sum_y = 0.0;
+        double sum_xy = 0.0;
+        double sum_x2 = 0.0;
+
+        for (int j = 0; j < bucket_size; ++j) {
+            int idx = i * bucket_size + j;
+            double x = time_series[idx];
+            double y = soc[idx];
+            sum_x += x;
+            sum_y += y;
+            sum_xy += x * y;
+            sum_x2 += x * x;
+        }
+
+        double slope = (bucket_size * sum_xy - sum_x * sum_y) / (bucket_size * sum_x2 - sum_x * sum_x);
+
+        // Store the mean and slope for this bucket
+        sampled_soc[i] = {mean_soc, slope};
     }
 
-    return {sampled_time, sampled_soc}; // Return the downsampled time and SOC data
+    return {sampled_time, sampled_soc}; // Return the downsampled time, SOC, and slopes
 }
-
-//adaptive PAA
-std::pair<std::vector<double>, std::vector<double>> DownsamplingAlgorithms::adaptivePAA(
-        const std::vector<double>& time_series,
-        const std::vector<double>& soc,
-        int n_out,
-        double variance_threshold
-) {
-    int n = soc.size(); // Get the size of the input data
-    if (n_out >= n || n_out == 0) {
-        // If the output size is greater than or equal to the input size or zero, return the original data
-        return {time_series, soc};
-    }
-
-    std::vector<double> sampled_time; // Vector to store the downsampled time points
-    std::vector<double> sampled_soc;  // Vector to store the downsampled SOC values
-    int segment_length = n / n_out;   // Calculate the initial segment length based on the input and output size
-
-    // Loop through the data and segment it based on variance
-    for (int i = 0; i < n;) {
-        // Get the current segment
-        std::vector<double> segment_soc(soc.begin() + i, soc.begin() + std::min(i + segment_length, n));
-        std::vector<double> segment_time(time_series.begin() + i, time_series.begin() + std::min(i + segment_length, n));
-
-        // Calculate the mean and variance of the SOC values in the segment
-        double variance = 0.0;
-        double mean = std::accumulate(segment_soc.begin(), segment_soc.end(), 0.0) / segment_soc.size();
-        for (double val : segment_soc) {
-            variance += (val - mean) * (val - mean); // Calculate variance
-        }
-        variance /= segment_soc.size();
-
-        // If the variance exceeds the threshold, break the segment into smaller pieces
-        if (variance > variance_threshold) {
-            int small_segment_length = segment_length / 2; // Use smaller segment length if variance is high
-            std::vector<double> small_segment_soc(soc.begin() + i, soc.begin() + std::min(i + small_segment_length, n));
-            std::vector<double> small_segment_time(time_series.begin() + i, time_series.begin() + std::min(i + small_segment_length, n));
-
-            // Calculate the mean SOC value and the corresponding mean time value
-            double small_segment_mean_soc = std::accumulate(small_segment_soc.begin(), small_segment_soc.end(), 0.0) / small_segment_soc.size();
-            double small_segment_mean_time = std::accumulate(small_segment_time.begin(), small_segment_time.end(), 0.0) / small_segment_time.size();
-
-            sampled_soc.push_back(small_segment_mean_soc);   // Add the mean SOC value of the small segment to the sampled SOC
-            sampled_time.push_back(small_segment_mean_time); // Add the mean time of the small segment to the sampled time
-            i += small_segment_length;
-        } else {
-            // Calculate the mean SOC and time for the larger segment
-            double segment_mean_soc = std::accumulate(segment_soc.begin(), segment_soc.end(), 0.0) / segment_soc.size();
-            double segment_mean_time = std::accumulate(segment_time.begin(), segment_time.end(), 0.0) / segment_time.size();
-
-            sampled_soc.push_back(segment_mean_soc);   // Add the mean SOC value of the segment to the sampled SOC
-            sampled_time.push_back(segment_mean_time); // Add the mean time of the segment to the sampled time
-            i += segment_length;
-        }
-
-        if (sampled_soc.size() >= n_out) {
-            break; // Stop if we have enough sampled data
-        }
-    }
-
-    return {std::vector<double>(sampled_time.begin(), sampled_time.begin() + n_out),
-            std::vector<double>(sampled_soc.begin(), sampled_soc.begin() + n_out)};
-}
-
-// random sampling algorithm
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////// random sampling ////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 std::pair<std::vector<double>, std::vector<double>> DownsamplingAlgorithms::randomSampling(
         const std::vector<double>& time_series,
         const std::vector<double>& soc,
@@ -305,47 +302,9 @@ std::pair<std::vector<double>, std::vector<double>> DownsamplingAlgorithms::rand
     return {sampled_time, sampled_soc};
 }
 
-// hybrid PAA-MinMax
-std::pair<std::vector<double>, std::vector<double>> DownsamplingAlgorithms::hybridPAAMinMax(
-        const std::vector<double>& time_series,
-        const std::vector<double>& soc,
-        int n_out,
-        double variance_threshold
-) {
-    int n = soc.size();
-    if (n_out >= n || n_out == 0) {
-        return {time_series, soc};
-    }
-
-    std::vector<double> sampled_time(n_out);
-    std::vector<double> sampled_soc(n_out);
-    int bucket_size = n / n_out;
-
-    for (int i = 0; i < n_out; ++i) {
-        // Extract the current segment for both SOC and time
-        std::vector<double> segment_soc(soc.begin() + i * bucket_size, soc.begin() + std::min((i + 1) * bucket_size, n));
-        std::vector<double> segment_time(time_series.begin() + i * bucket_size, time_series.begin() + std::min((i + 1) * bucket_size, n));
-
-        // Calculate the average SOC value
-        double avg_soc = std::accumulate(segment_soc.begin(), segment_soc.end(), 0.0) / segment_soc.size();
-
-        // Check if the spike value exceeds the variance threshold
-        double max_soc = *std::max_element(segment_soc.begin(), segment_soc.end());
-        double spike_soc = (max_soc - avg_soc > variance_threshold) ? max_soc : avg_soc;
-
-        // Find the corresponding time point for the max value if a spike is used
-        double corresponding_time = (spike_soc == max_soc) ? segment_time[std::distance(segment_soc.begin(), std::max_element(segment_soc.begin(), segment_soc.end()))]
-                                                           : std::accumulate(segment_time.begin(), segment_time.end(), 0.0) / segment_time.size();
-
-        sampled_soc[i] = spike_soc;
-        sampled_time[i] = corresponding_time;
-    }
-
-    return {sampled_time, sampled_soc};
-}
-
-
-// douglas algorithm
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////// Ramer-Douglas-Peucker ////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Function to perform Douglas-Peucker downsampling
 std::vector<double> DownsamplingAlgorithms::douglasPeucker(const std::vector<double>& data, int n_out, double epsilon) {
     int n = data.size(); // Get the size of the input data

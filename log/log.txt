@@ -1,7 +1,6 @@
-Largest Triangle Three Buckets duration: 0.00649096 seconds
-Min-Max Downsampling duration: 0.00124254 seconds
-Piecewise Aggregate Approximation duration: 0.0004045 seconds
-Random Sampling duration: 0.00689921 seconds
-Adaptive PAA duration: 0.00184283 seconds
-Hybrid PAA MinMax duration: 0.00190788 seconds
-Douglas sampling duration: 0.897257 seconds
+Largest Triangle Three Buckets duration: 0.000706 seconds
+Min-Max Downsampling duration: 0.00121317 seconds
+Piecewise Aggregate Approximation duration: 0.000244375 seconds
+Random Sampling duration: 0.00679775 seconds
+Adaptive PAA duration: 0.00115046 seconds
+Douglas sampling duration: 0.886905 seconds
