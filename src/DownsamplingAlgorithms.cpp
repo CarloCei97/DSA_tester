@@ -305,87 +305,66 @@ std::pair<std::vector<double>, std::vector<double>> DownsamplingAlgorithms::rand
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// Ramer-Douglas-Peucker ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Function to perform Douglas-Peucker downsampling
-std::vector<double> DownsamplingAlgorithms::douglasPeucker(const std::vector<double>& data, int n_out, double epsilon) {
-    int n = data.size(); // Get the size of the input data
-    if (n_out >= n || n_out == 0) {
-        // If the desired number of output points is greater than or equal to the input size
-        // or if n_out is zero, return the original data
-        return data;
-    }
+std::pair<std::vector<double>, std::vector<double>> DownsamplingAlgorithms::RDPsampling(
+        const std::vector<double>& time_series,
+        const std::vector<double>& soc,
+        float epsilon
+) {
+    std::vector<double> time_result, soc_result;
 
-    std::vector<int> indexSet; // Vector to store the indices of the points that will be kept
-    // Perform the recursive Douglas-Peucker algorithm to find which points to keep
-    douglasPeuckerRecursive(data, 0, n - 1, epsilon, indexSet);
+    // Helper function to calculate perpendicular distance
+    auto perpendicularDistance = [](double time_p, double soc_p, double time1, double soc1, double time2, double soc2) {
+        double vec1_x = time_p - time1;
+        double vec1_y = soc_p - soc1;
+        double vec2_x = time2 - time1;
+        double vec2_y = soc2 - soc1;
+        double d_vec2 = sqrt(vec2_x * vec2_x + vec2_y * vec2_y);
+        double cross_product = vec1_x * vec2_y - vec2_x * vec1_y;
+        return fabs(cross_product / d_vec2);
+    };
 
-    // Create a vector to store the downsampled data
-    std::vector<double> sampled;
-    // Collect the data points corresponding to the indices in indexSet
-    for (int idx : indexSet) {
-        sampled.push_back(data[idx]);
-    }
-
-    return sampled; // Return the downsampled data
-}
-
-// Recursive function for Douglas-Peucker algorithm
-void DownsamplingAlgorithms::douglasPeuckerRecursive(const std::vector<double>& data, int start, int end, double epsilon, std::vector<int>& indexSet) {
-    if (end <= start) return; // Base case: If the segment is too small, do nothing
-
-    // Initialize variables to find the point with the maximum perpendicular distance
-    double maxDist = 0.0;
-    int index = start;
-
-    // Loop through the segment to find the point with the largest perpendicular distance from the line segment
-    for (int i = start + 1; i < end; ++i) {
-        double dist = perpendicularDistance(data, i, start, end); // Calculate the distance
-        if (dist > maxDist) {
-            maxDist = dist; // Update the maximum distance
-            index = i; // Update the index of the point with the maximum distance
+    // Find the point with the maximum distance
+    double dmax = 0;
+    int index = 0;
+    for (int i = 1; i < time_series.size() - 1; ++i) {
+        double d = perpendicularDistance(time_series[i], soc[i], time_series[0], soc[0], time_series[time_series.size() - 1], soc[soc.size() - 1]);
+        if (d > dmax) {
+            index = i;
+            dmax = d;
         }
     }
 
-    // If the maximum distance is greater than the threshold epsilon
-    if (maxDist > epsilon) {
-        // Recursively apply the Douglas-Peucker algorithm to the segments on either side of the point with the maximum distance
-        douglasPeuckerRecursive(data, start, index, epsilon, indexSet);
-        indexSet.push_back(index); // Add the point with the maximum distance to the index set
-        douglasPeuckerRecursive(data, index, end, epsilon, indexSet);
-    }
-}
+    // If max distance is greater than epsilon, recursively simplify
+    if (dmax > epsilon) {
+        std::vector<double> pre_time_part, pre_soc_part, next_time_part, next_soc_part;
 
-// Utility function to calculate perpendicular distance
-double DownsamplingAlgorithms::perpendicularDistance(const std::vector<double>& data, int index, int start, int end) {
-    // Calculate the coefficients of the line equation (Ax + By + C = 0) for the line segment from start to end
-    double A = data[end] - data[start];
-    double B = start - end;
-    double C = A * start + B * data[start];
-
-    // Calculate and return the perpendicular distance from the point at 'index' to the line segment
-    return std::abs(A * index + B * data[index] + C) / std::sqrt(A * A + B * B);
-}
-
-std::vector<double> DownsamplingAlgorithms::douglasPeuckerBinarySearch(const std::vector<double>& data, int n_out, double initialEpsilon) {
-    double low = 0.0;
-    double high = initialEpsilon;
-    std::vector<double> sampled;
-    int maxIterations = 100;  // Set a limit to prevent infinite looping
-    int iteration = 0;
-    double tolerance = 0.01 * n_out;  // Allow a small tolerance in the number of points
-
-    while (iteration < maxIterations) {
-        iteration++;
-        double epsilon = (low + high) / 2.0;
-        sampled = douglasPeucker(data, n_out, epsilon);
-
-        if (sampled.size() > n_out + tolerance) {
-            low = epsilon;  // Increase epsilon to reduce points
-        } else if (sampled.size() < n_out - tolerance) {
-            high = epsilon;  // Decrease epsilon to retain more points
-        } else {
-            break;  // If within tolerance, break the loop
+        for (int i = 0; i <= index; ++i) {
+            pre_time_part.push_back(time_series[i]);
+            pre_soc_part.push_back(soc[i]);
         }
+
+        for (int i = index; i < time_series.size(); ++i) {
+            next_time_part.push_back(time_series[i]);
+            next_soc_part.push_back(soc[i]);
+        }
+
+        // Recursive calls
+        auto result1 = RDPsampling(pre_time_part, pre_soc_part, epsilon);
+        auto result2 = RDPsampling(next_time_part, next_soc_part, epsilon);
+
+        // Combine results
+        time_result.insert(time_result.end(), result1.first.begin(), result1.first.end());
+        soc_result.insert(soc_result.end(), result1.second.begin(), result1.second.end());
+
+        time_result.insert(time_result.end(), result2.first.begin() + 1, result2.first.end());
+        soc_result.insert(soc_result.end(), result2.second.begin() + 1, result2.second.end());
+    } else {
+        // If not, just keep the first and last points
+        time_result.push_back(time_series[0]);
+        soc_result.push_back(soc[0]);
+        time_result.push_back(time_series[time_series.size() - 1]);
+        soc_result.push_back(soc[soc.size() - 1]);
     }
 
-    return sampled;
+    return std::make_pair(time_result, soc_result);
 }

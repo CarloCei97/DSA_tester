@@ -7,6 +7,7 @@
 //#include <matplot/matplot.h>
 #include "include/CSVHandler.h"
 #include "include/DownsamplingAlgorithms.h"
+#include "include/WaveletTransform.h"
 
 //namespace plt = matplot;
 
@@ -45,9 +46,15 @@ double timePointToDouble(const std::chrono::system_clock::time_point& tp) {
 //###############################################################################################
 
 int main() {
+    //general parameters
     const int n_out = 2000;
+    //douglas algorithm
     const double variance_threshold = 10;
     const double epsilon = 0.5;
+    //wavelet transform
+    std::string waveletType = "Haar";
+    double threshold = 0.5;
+
 
     // Read data from CSV file
     CSVHandler reader("/Users/carlocei/Desktop/DS_A_Tester/real_data/sample_data_SOC.csv");
@@ -62,9 +69,13 @@ int main() {
         time_series.push_back(time_value);
         soc.push_back(record.soc_value);
     }
+    // Perform downsampling using DWT and keeping track of the execution time
+    auto start_time = std::chrono::high_resolution_clock::now();
+    auto [wavelet_sampled_time, wavelet_sampled_soc] = WaveletTransform::downsample(time_series, soc, waveletType, threshold);
+    auto wavelet_time = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start_time).count();
 
     // Perform downsampling using LTTB and keeping track of the execution time
-    auto start_time = std::chrono::high_resolution_clock::now();
+    start_time = std::chrono::high_resolution_clock::now();
     auto [lttb_sampled_time, lttb_sampled_soc] = DownsamplingAlgorithms::largestTriangleThreeBuckets(time_series, soc, n_out);
     auto lttb_time = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start_time).count();
 
@@ -97,26 +108,29 @@ int main() {
     auto [Random_sampled_time, Random_sampled_soc] = DownsamplingAlgorithms::randomSampling(time_series, soc, n_out);
     auto random_sampling_time = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start_time).count();
 
+    // Perform downsampling using Douglas-Peucker algorithm and keeping track of the execution time
     start_time = std::chrono::high_resolution_clock::now();
-    auto Douglas_sampled = DownsamplingAlgorithms::douglasPeucker(soc, n_out, epsilon);
-    auto Douglas_time = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start_time).count();
+    auto [RDP_sampled_time, RDP_sampled_soc] = DownsamplingAlgorithms::RDPsampling(time_series, soc, epsilon);
+    auto RDP_time = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start_time).count();
 
 
 
     // Save the downsampled data to CSV files
+    CSVHandler waveletHandler("../log/DWT_sampled.csv");
     CSVHandler lttbHandler("../log/lttb_sampled.csv");
     CSVHandler minmaxHandler("../log/minmax_sampled.csv");
     CSVHandler paaHandler("../log/paa_sampled.csv");
     CSVHandler adaptivePaaHandler("../log/PLAA_sampled.csv");
     CSVHandler randomHandler("../log/random_sampled.csv");
     CSVHandler hybridPaaMinMaxHandler("../log/hybrid_paa_minmax_sampled.csv");
-    CSVHandler douglasHandler("../log/Douglas_sampled.csv");
-    CSVHandler douglasAdaptiveHandler("../log/DouglasAdaptive_sampled.csv");
+    CSVHandler RDPHandler("../log/RDP_sampled.csv");
+    waveletHandler.saveToCSV(wavelet_sampled_time, wavelet_sampled_soc);
     lttbHandler.saveToCSV(lttb_sampled_time, lttb_sampled_soc);
     minmaxHandler.saveToCSV(MinMax_sampled_time, MinMax_sampled_soc);
     paaHandler.saveToCSV(PAA_sampled_time, PAA_sampled_soc);
     adaptivePaaHandler.saveToCSV(PLAA_sampled_time, PLAA_sampled_soc);
     randomHandler.saveToCSV(Random_sampled_time, Random_sampled_soc);
+    RDPHandler.saveToCSV(RDP_sampled_time, RDP_sampled_soc);
 
     // Plot the signals
 
@@ -134,12 +148,13 @@ int main() {
 
     // print the logfile
     std::ofstream logFile("/Users/carlocei/Desktop/DS_A_Tester/log/log.txt");
+    logFile << "Discrete Wavelet Transform duration: " << wavelet_time << " seconds\n";
     logFile << "Largest Triangle Three Buckets duration: " << lttb_time << " seconds\n";
     logFile << "Min-Max Downsampling duration: " << minmax_time << " seconds\n";
     logFile << "Piecewise Aggregate Approximation duration: " << paa_time << " seconds\n";
     logFile << "Random Sampling duration: " << random_sampling_time << " seconds\n";
     logFile << "Adaptive PAA duration: " << PLAA_time << " seconds\n";
-    logFile << "Douglas sampling duration: " << Douglas_time << " seconds\n";
+    logFile << "Douglas sampling duration: " << RDP_time << " seconds\n";
     logFile.close();
 
     // Launch the Python script to plot the graphs

@@ -9,7 +9,9 @@ if (Matplot++_FOUND)
             src/DownsamplingAlgorithms.cpp
             include/DownsamplingAlgorithms.h
             src/CSVHandler.cpp
-            include/CSVHandler.h)
+            include/CSVHandler.h
+            include/WaveletTransform.h
+            src/WaveletTransform.cpp)
     target_link_libraries(DS_A_Tester PRIVATE Matplot++::matplot)
 endif ()
 

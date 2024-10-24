@@ -52,7 +52,7 @@ build cmake_object_order_depends_target_DS_A_Tester: phony || CMakeFiles/DS_A_Te
 build CMakeFiles/DS_A_Tester.dir/main.cpp.o: CXX_COMPILER__DS_A_Tester_unscanned_Debug /Users/carlocei/Desktop/DS_A_Tester/main.cpp || cmake_object_order_depends_target_DS_A_Tester
   DEFINES = -DMATPLOT_BUILD_HIGH_RESOLUTION_WORLD_MAP -DNOMINMAX
   DEP_FILE = CMakeFiles/DS_A_Tester.dir/main.cpp.o.d
-  FLAGS = -g -std=gnu++2b -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -mmacosx-version-min=14.0 -fcolor-diagnostics
+  FLAGS = -g -std=gnu++2b -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk -mmacosx-version-min=14.0 -fcolor-diagnostics
   INCLUDES = -isystem /opt/homebrew/include
   OBJECT_DIR = CMakeFiles/DS_A_Tester.dir
   OBJECT_FILE_DIR = CMakeFiles/DS_A_Tester.dir
@@ -60,7 +60,7 @@ build CMakeFiles/DS_A_Tester.dir/main.cpp.o: CXX_COMPILER__DS_A_Tester_unscanned
 build CMakeFiles/DS_A_Tester.dir/src/DownsamplingAlgorithms.cpp.o: CXX_COMPILER__DS_A_Tester_unscanned_Debug /Users/carlocei/Desktop/DS_A_Tester/src/DownsamplingAlgorithms.cpp || cmake_object_order_depends_target_DS_A_Tester
   DEFINES = -DMATPLOT_BUILD_HIGH_RESOLUTION_WORLD_MAP -DNOMINMAX
   DEP_FILE = CMakeFiles/DS_A_Tester.dir/src/DownsamplingAlgorithms.cpp.o.d
-  FLAGS = -g -std=gnu++2b -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -mmacosx-version-min=14.0 -fcolor-diagnostics
+  FLAGS = -g -std=gnu++2b -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk -mmacosx-version-min=14.0 -fcolor-diagnostics
   INCLUDES = -isystem /opt/homebrew/include
   OBJECT_DIR = CMakeFiles/DS_A_Tester.dir
   OBJECT_FILE_DIR = CMakeFiles/DS_A_Tester.dir/src
@@ -68,7 +68,15 @@ build CMakeFiles/DS_A_Tester.dir/src/DownsamplingAlgorithms.cpp.o: CXX_COMPILER_
 build CMakeFiles/DS_A_Tester.dir/src/CSVHandler.cpp.o: CXX_COMPILER__DS_A_Tester_unscanned_Debug /Users/carlocei/Desktop/DS_A_Tester/src/CSVHandler.cpp || cmake_object_order_depends_target_DS_A_Tester
   DEFINES = -DMATPLOT_BUILD_HIGH_RESOLUTION_WORLD_MAP -DNOMINMAX
   DEP_FILE = CMakeFiles/DS_A_Tester.dir/src/CSVHandler.cpp.o.d
-  FLAGS = -g -std=gnu++2b -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -mmacosx-version-min=14.0 -fcolor-diagnostics
+  FLAGS = -g -std=gnu++2b -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk -mmacosx-version-min=14.0 -fcolor-diagnostics
+  INCLUDES = -isystem /opt/homebrew/include
+  OBJECT_DIR = CMakeFiles/DS_A_Tester.dir
+  OBJECT_FILE_DIR = CMakeFiles/DS_A_Tester.dir/src
+
+build CMakeFiles/DS_A_Tester.dir/src/WaveletTransform.cpp.o: CXX_COMPILER__DS_A_Tester_unscanned_Debug /Users/carlocei/Desktop/DS_A_Tester/src/WaveletTransform.cpp || cmake_object_order_depends_target_DS_A_Tester
+  DEFINES = -DMATPLOT_BUILD_HIGH_RESOLUTION_WORLD_MAP -DNOMINMAX
+  DEP_FILE = CMakeFiles/DS_A_Tester.dir/src/WaveletTransform.cpp.o.d
+  FLAGS = -g -std=gnu++2b -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk -mmacosx-version-min=14.0 -fcolor-diagnostics
   INCLUDES = -isystem /opt/homebrew/include
   OBJECT_DIR = CMakeFiles/DS_A_Tester.dir
   OBJECT_FILE_DIR = CMakeFiles/DS_A_Tester.dir/src
@@ -81,8 +89,8 @@ build CMakeFiles/DS_A_Tester.dir/src/CSVHandler.cpp.o: CXX_COMPILER__DS_A_Tester
 #############################################
 # Link the executable DS_A_Tester
 
-build DS_A_Tester: CXX_EXECUTABLE_LINKER__DS_A_Tester_Debug CMakeFiles/DS_A_Tester.dir/main.cpp.o CMakeFiles/DS_A_Tester.dir/src/DownsamplingAlgorithms.cpp.o CMakeFiles/DS_A_Tester.dir/src/CSVHandler.cpp.o | /opt/homebrew/lib/libmatplot.1.2.0.dylib
-  FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -mmacosx-version-min=14.0
+build DS_A_Tester: CXX_EXECUTABLE_LINKER__DS_A_Tester_Debug CMakeFiles/DS_A_Tester.dir/main.cpp.o CMakeFiles/DS_A_Tester.dir/src/DownsamplingAlgorithms.cpp.o CMakeFiles/DS_A_Tester.dir/src/CSVHandler.cpp.o CMakeFiles/DS_A_Tester.dir/src/WaveletTransform.cpp.o | /opt/homebrew/lib/libmatplot.1.2.0.dylib
+  FLAGS = -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk -mmacosx-version-min=14.0
   LINK_LIBRARIES = -Wl,-rpath,/opt/homebrew/lib  /opt/homebrew/lib/libmatplot.1.2.0.dylib
   OBJECT_DIR = CMakeFiles/DS_A_Tester.dir
   POST_BUILD = :

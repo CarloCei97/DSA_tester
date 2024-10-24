@@ -16,13 +16,9 @@ public:
     static std::pair<std::vector<double>, std::vector<std::pair<double, double>>> piecewiseLinearAggregateApproximation(const std::vector<double>& time_series,const std::vector<double>& soc,int n_out);
     static std::pair<std::vector<double>, std::vector<double>> randomSampling(const std::vector<double>& time_series, const std::vector<double>& soc, int n_out);
     // Douglas-Peucker algorithm method
-    static std::vector<double> douglasPeuckerBinarySearch(const std::vector<double>& data, int n_out, double initialEpsilon);
-    static std::vector<double> douglasPeucker(const std::vector<double>& data, int n_out, double epsilon);
+    static std::pair<std::vector<double>, std::vector<double>> RDPsampling(const std::vector<double>& time_series, const std::vector<double>& soc, float epsilon);
 
 private:
-    // Helper functions for Douglas-Peucker
-    static void douglasPeuckerRecursive(const std::vector<double>& data, int start, int end, double epsilon, std::vector<int>& indexSet);
-    static double perpendicularDistance(const std::vector<double>& data, int index, int start, int end);
 };
 
 #endif // DOWNSAMPLING_ALGORITHMS_H
