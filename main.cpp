@@ -3,12 +3,13 @@
 #include <vector>
 #include <iomanip>
 #include <sstream>
+#include <filesystem>
 #include <cstdlib> // Include for system() function
 //#include <matplot/matplot.h>
 #include "include/CSVHandler.h"
 #include "include/DownsamplingAlgorithms.h"
 #include "include/WaveletTransform.h"
-
+namespace fs = std::filesystem;
 //namespace plt = matplot;
 
 //###############################################################################################
@@ -57,17 +58,54 @@ int main() {
 
 
     // Read data from CSV file
-    CSVHandler reader("/Users/carlocei/Desktop/DS_A_Tester/real_data/sample_data_SOC.csv");
+    std::string folder_path = "/Users/carlocei/Desktop/DS_A_Tester/real_data/";
+    std::vector<std::string> csv_files;
+
+    // List CSV files in the folder
+    for (const auto& entry : fs::directory_iterator(folder_path)) {
+        if (entry.path().extension() == ".csv") {
+            csv_files.push_back(entry.path().filename().string());
+        }
+    }
+
+    // Display the list of files for the user to choose from
+    std::cout << "Available CSV files:\n";
+    for (size_t i = 0; i < csv_files.size(); ++i) {
+        std::cout << i + 1 << ": " << csv_files[i] << "\n";
+    }
+
+    // Get user's choice
+    int choice;
+    std::cout << "Enter the number of the file to select: ";
+    std::cin >> choice;
+
+    // Ensure valid choice
+    if (choice < 1 || choice > csv_files.size()) {
+        std::cerr << "Invalid choice.\n";
+        return 1;
+    }
+
+    // Read data from the selected CSV file
+    std::string selected_file = folder_path + csv_files[choice - 1];
+    CSVHandler reader(selected_file);
     std::vector<CSVRecord> records = reader.readCSV();
 
+// Vectors to store each column's data
     std::vector<double> time_series;
     std::vector<double> soc;
+    std::vector<double> current;
+    std::vector<double> voltage;
 
     for (const auto& record : records) {
+        // Convert 'datetime' string to time_point, then to double
         auto time_point = parseDateTime(record.datetime); // Convert string to time_point
         double time_value = timePointToDouble(time_point); // Convert time_point to double
+
+        // Push values into corresponding vectors
         time_series.push_back(time_value);
         soc.push_back(record.soc_value);
+        current.push_back(record.curr_value);    // Assuming record has a field for current
+        voltage.push_back(record.volt_value);    // Assuming record has a field for voltage
     }
     // Perform downsampling using DWT and keeping track of the execution time
     auto start_time = std::chrono::high_resolution_clock::now();
@@ -158,9 +196,15 @@ int main() {
     logFile.close();
 
     // Launch the Python script to plot the graphs
-    int result = system("python3 /Users/carlocei/Desktop/DS_A_Tester/plotgraphs.py");
+    std::string pythonScript = "/Users/carlocei/Desktop/DS_A_Tester/plotgraphs.py";  // Full path to script.py
+    std::string path = "/Users/carlocei/Desktop/DS_A_Tester/real_data/sample_data_SOC.csv";
+
+    // Launch Python script with path as an argument
+    std::string command = "python3 " + pythonScript + " " + path;
+    int result = std::system(command.c_str());
+
     if (result != 0) {
-        std::cerr << "Error: Failed to execute plotgraphs.py" << std::endl;
+        std::cerr << "Failed to execute Python script\n";
     }
 
     return 0;

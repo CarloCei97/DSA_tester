@@ -1,10 +1,15 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+import sys
 from datetime import datetime
 
-# Original file path
-original_file_path = "/Users/carlocei/Desktop/DS_A_Tester/real_data/sample_data_SOC.csv"  # Update this with the correct file path
+# Check if a file path argument was provided
+if len(sys.argv) > 1:
+    original_file_path = sys.argv[1]
+else:
+    print("Error: No file path provided.")
+    exit()
 
 # Load the original CSV file
 try:
@@ -15,7 +20,7 @@ except pd.errors.EmptyDataError:
     exit()
 
 # Folder path for sampled data
-sampled_folder = "/Users/carlocei/Desktop/DS_A_Tester/log/"  # Update this with the correct folder path for sampled signals
+sampled_folder = "/Users/carlocei/Desktop/DS_A_Tester/log/"  # Update with correct folder path for sampled signals
 
 # List all .csv files in the sampled folder
 sampled_files = [f for f in os.listdir(sampled_folder) if f.endswith('.csv')]
