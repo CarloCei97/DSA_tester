@@ -1,35 +1,36 @@
-#ifndef CSVREADER_H
-#define CSVREADER_H
+#ifndef CSVHANDLER_H
+#define CSVHANDLER_H
 
 #include <string>
 #include <vector>
 
-// A structure to hold a single record from the CSV
-struct CSVRecord {
-    int sample_number;
-    std::string datetime;
-    double soc_value;
-    double curr_value;
-    double volt_value;
+// Struct to hold individual CSV records
+struct Record {
+    int sampleNumber;
+    std::string time;
+    double curr;
+    double volt;
+    double soc;
 };
 
+// Class to handle CSV file operations
 class CSVHandler {
-public:
-    explicit CSVHandler(const std::string& filename);
-
-    // Function to read CSV records
-    std::vector<CSVRecord> readCSV();
-
-    // Overloaded function to save only time_series and soc
-    void saveToCSV(const std::vector<double>& time_series, const std::vector<double>& soc) const;
-
-    // Overloaded function to save time_series, soc, current, and voltage
-    void saveToCSV(const std::vector<double>& time_series, const std::vector<double>& soc,
-                   const std::vector<double>& current, const std::vector<double>& voltage) const;
-
 private:
+    std::vector<Record> records;
     std::string filename_;
+
+public:
+    // Default constructor
+    CSVHandler() = default;
+
+    // Constructor that takes a filename
+    CSVHandler(const std::string &filename) : filename_(filename) {}
+
+    bool readCSV(const std::string &filePath);
+    const std::vector<Record>& getRecords() const;
+
+    // Function to save time series and SoC data to a CSV file
+    void saveToCSV(const std::vector<double>& time_series, const std::vector<double>& soc) const;
 };
 
-
-#endif // CSVREADER_H
+#endif // CSVHANDLER_H

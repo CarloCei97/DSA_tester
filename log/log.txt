@@ -1,7 +1,18 @@
-Discrete Wavelet Transform duration: 0.00178379 seconds
-Largest Triangle Three Buckets duration: 0.00049225 seconds
-Min-Max Downsampling duration: 0.00106446 seconds
-Piecewise Aggregate Approximation duration: 0.000205708 seconds
-Random Sampling duration: 0.00517208 seconds
-Adaptive PAA duration: 0.000966875 seconds
-Douglas sampling duration: 0.000802 seconds
+Discrete Wavelet Transform duration (soc): 0.00205596 seconds
+Discrete Wavelet Transform duration (curr): 0.0019895 seconds
+Discrete Wavelet Transform duration (volt): 0.00195992 seconds
+Largest Triangle Three Buckets duration (soc): 0.000648417 seconds
+Largest Triangle Three Buckets duration (curr): 0.000694375 seconds
+Largest Triangle Three Buckets duration (volt): 0.0007075 seconds
+Min-Max Downsampling duration (soc): 0.00114654 seconds
+Min-Max Downsampling duration (curr): 0.00122404 seconds
+Min-Max Downsampling duration (volt): 0.00123054 seconds
+Piecewise Aggregate Approximation duration (soc): 0.000241917 seconds
+Piecewise Aggregate Approximation duration (curr): 0.000235625 seconds
+Piecewise Aggregate Approximation duration (volt): 0.000235583 seconds
+Random Sampling duration (soc): 0.00639033 seconds
+Random Sampling duration (curr): 0.00635971 seconds
+Random Sampling duration (volt): 0.00639175 seconds
+Douglas-Peucker (RDP) duration (soc): 0.146627 seconds
+Douglas-Peucker (RDP) duration (curr): 0.553614 seconds
+Douglas-Peucker (RDP) duration (volt): 0.243437 seconds
