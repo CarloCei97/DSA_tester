@@ -4,17 +4,15 @@
 #include <iomanip>
 #include <sstream>
 #include <filesystem>
-#include <cstdlib> // Include for system() function
-//#include <matplot/matplot.h>
+#include <cstdlib> //system()
 #include "include/CSVHandler.h"
 #include "include/DownsamplingAlgorithms.h"
 #include "include/WaveletTransform.h"
 namespace fs = std::filesystem;
-//namespace plt = matplot;
 
-//###############################################################################################
-//##################### handling time format conversion #########################################
-//###############################################################################################
+//#######################################################################################################
+//##################### handling time format conversion #################################################
+//#######################################################################################################
 
 // Function to parse a datetime string and convert it to a time_point
 std::chrono::system_clock::time_point parseDateTime(const std::string& datetime_str) {
@@ -41,12 +39,13 @@ double timePointToDouble(const std::chrono::system_clock::time_point& tp) {
     auto duration = tp.time_since_epoch();
     return std::chrono::duration_cast<std::chrono::seconds>(duration).count();
 }
+//#######################################################################################################
+//#######################################################################################################
+//#######################################################################################################
 
-//###############################################################################################
-//###############################################################################################
-//###############################################################################################
 
 int main() {
+//########################################## parameters #################################################
     //general parameters
     const int n_out = 2000;
     //douglas algorithm
@@ -55,8 +54,9 @@ int main() {
     //wavelet transform
     std::string waveletType = "Haar";
     double threshold = 0.5;
+//##########################################################################################################
 
-
+//########################################## import data from file #########################################
     // Read data from CSV file
     std::string folder_path = "/Users/carlocei/Desktop/DS_A_Tester/real_data/";
     std::vector<std::string> csv_files;
@@ -109,20 +109,10 @@ int main() {
         current.push_back(record.curr);    // Assuming record has a field for current
         voltage.push_back(record.volt);    // Assuming record has a field for voltage
     }
-/*
-// Perform downsampling using DWT for each variable separately and keep track of execution time
-    auto start_time = std::chrono::high_resolution_clock::now();
-    auto [wavelet_sampled_time_soc, wavelet_sampled_soc] = WaveletTransform::downsample(time_series, soc, waveletType, threshold);
-    auto wavelet_time_soc = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start_time).count();
+//#######################################################################################################
 
-    auto start_time = std::chrono::high_resolution_clock::now();
-    auto [wavelet_sampled_time_volt, wavelet_sampled_volt] = WaveletTransform::downsample(time_series, voltage, waveletType, threshold);
-    auto wavelet_time_volt = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start_time).count();
+//################################# perform the downsampling algorithms #################################
 
-    start_time = std::chrono::high_resolution_clock::now();
-    auto [wavelet_sampled_time_curr, wavelet_sampled_curr] = WaveletTransform::downsample(time_series, current, waveletType, threshold);
-    auto wavelet_time_curr = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start_time).count();
-*/
 // Perform downsampling using LTTB for each variable separately and keep track of execution time
     auto start_time = std::chrono::high_resolution_clock::now();
     auto [lttb_sampled_time_soc, lttb_sampled_soc] = DownsamplingAlgorithms::largestTriangleThreeBuckets(time_series, soc, n_out);
@@ -188,16 +178,23 @@ int main() {
     auto [RDP_sampled_time_curr, RDP_sampled_curr] = DownsamplingAlgorithms::RDPsampling(time_series, current, epsilon);
     auto RDP_time_curr = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start_time).count();
 
+    /*
+// Perform downsampling using DWT for each variable separately and keep track of execution time
+    auto start_time = std::chrono::high_resolution_clock::now();
+    auto [wavelet_sampled_time_soc, wavelet_sampled_soc] = WaveletTransform::downsample(time_series, soc, waveletType, threshold);
+    auto wavelet_time_soc = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start_time).count();
 
+    auto start_time = std::chrono::high_resolution_clock::now();
+    auto [wavelet_sampled_time_volt, wavelet_sampled_volt] = WaveletTransform::downsample(time_series, voltage, waveletType, threshold);
+    auto wavelet_time_volt = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start_time).count();
 
-    // Save the downsampled data to separate CSV files with only two columns: time and the respective downsampled variable
-
-/*
-// Wavelet downsampling files
-    CSVHandler waveletHandler_soc("../log/DWT_sampled_soc.csv");
-    CSVHandler waveletHandler_curr("../log/DWT_sampled_curr.csv");
-    CSVHandler waveletHandler_volt("../log/DWT_sampled_volt.csv");
+    start_time = std::chrono::high_resolution_clock::now();
+    auto [wavelet_sampled_time_curr, wavelet_sampled_curr] = WaveletTransform::downsample(time_series, current, waveletType, threshold);
+    auto wavelet_time_curr = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start_time).count();
 */
+//#######################################################################################################
+
+//############################ save the results of the downsampling #####################################
 
 // LTTB downsampling files
     CSVHandler lttbHandler_soc("../log/lttb_sampled_soc.csv");
@@ -229,14 +226,14 @@ int main() {
     CSVHandler RDPHandler_curr("../log/RDP_sampled_curr.csv");
     CSVHandler RDPHandler_volt("../log/RDP_sampled_volt.csv");
 
-// Save each downsampled dataset to its corresponding file with only two columns: time and the downsampled variable
-
-/*
-// Wavelet downsampled data
-    waveletHandler_soc.saveToCSV(wavelet_sampled_time_soc, wavelet_sampled_soc);
-    waveletHandler_curr.saveToCSV(wavelet_sampled_time_curr, wavelet_sampled_curr);
-    waveletHandler_volt.saveToCSV(wavelet_sampled_time_volt, wavelet_sampled_volt);
+    /*
+// Wavelet downsampling files
+    CSVHandler waveletHandler_soc("../log/DWT_sampled_soc.csv");
+    CSVHandler waveletHandler_curr("../log/DWT_sampled_curr.csv");
+    CSVHandler waveletHandler_volt("../log/DWT_sampled_volt.csv");
 */
+
+// Save each downsampled dataset to its corresponding file with only two columns: time and the downsampled variable
 
 // LTTB downsampled data
     lttbHandler_soc.saveToCSV(lttb_sampled_time_soc, lttb_sampled_soc);
@@ -263,34 +260,18 @@ int main() {
     RDPHandler_curr.saveToCSV(RDP_sampled_time_curr, RDP_sampled_curr);
     RDPHandler_volt.saveToCSV(RDP_sampled_time_volt, RDP_sampled_volt);
 
+    /*
+// Wavelet downsampled data
+    waveletHandler_soc.saveToCSV(wavelet_sampled_time_soc, wavelet_sampled_soc);
+    waveletHandler_curr.saveToCSV(wavelet_sampled_time_curr, wavelet_sampled_curr);
+    waveletHandler_volt.saveToCSV(wavelet_sampled_time_volt, wavelet_sampled_volt);
+*/
+//#######################################################################################################
 
-    // Plot the signals
-
-//    // Original Signal
-//    plt::figure();
-//    plt::plot(time_series, soc);
-//    plt::title("Original Signal");
-//    plt::show();
-//
-//    // PAA downsampled
-//    plt::figure();
-//    plt::plot(time_series, Douglas_sampled);
-//    plt::title("Douglas sampled Signal");
-//    plt::show();
-
-//    std::cout << "Wavelet sampled time for soc:\n";
-//    for (const auto& t : wavelet_sampled_time_soc) {
-//        std::cout << t << " ";
-//    }
+//################################ save the duration times ##############################################
     std::cout << std::endl;
     // Print the logfile with detailed durations for each variable
     std::ofstream logFile("/Users/carlocei/Desktop/DS_A_Tester/log/log.txt");
-
-/*
-    logFile << "Discrete Wavelet Transform duration (soc): " << wavelet_time_soc << " seconds\n";
-    logFile << "Discrete Wavelet Transform duration (curr): " << wavelet_time_curr << " seconds\n";
-    logFile << "Discrete Wavelet Transform duration (volt): " << wavelet_time_volt << " seconds\n";
-*/
 
     logFile << "Largest Triangle Three Buckets duration (soc): " << lttb_time_soc << " seconds\n";
     logFile << "Largest Triangle Three Buckets duration (curr): " << lttb_time_curr << " seconds\n";
@@ -311,13 +292,19 @@ int main() {
     logFile << "Douglas-Peucker (RDP) duration (soc): " << RDP_time_soc << " seconds\n";
     logFile << "Douglas-Peucker (RDP) duration (curr): " << RDP_time_curr << " seconds\n";
     logFile << "Douglas-Peucker (RDP) duration (volt): " << RDP_time_volt << " seconds\n";
-
+/*
+    logFile << "Discrete Wavelet Transform duration (soc): " << wavelet_time_soc << " seconds\n";
+    logFile << "Discrete Wavelet Transform duration (curr): " << wavelet_time_curr << " seconds\n";
+    logFile << "Discrete Wavelet Transform duration (volt): " << wavelet_time_volt << " seconds\n";
+*/
     logFile.close();
+//#######################################################################################################
 
+//############################# launch the script to plot the graphs ####################################
 
     // Launch the Python script to plot the graphs
     std::string pythonScript = "/Users/carlocei/Desktop/DS_A_Tester/plotgraphs.py";  // Full path to script.py
-    // Launch Python script with path as an argument
+    // Launch Python script with the path of the analyzed file as an argument
     std::string command = "python3 " + pythonScript + " " + selected_file;
     std::cout << command;
     int result = std::system(command.c_str());
@@ -325,6 +312,6 @@ int main() {
     if (result != 0) {
         std::cerr << "Failed to execute Python script\n";
     }
-
+//#######################################################################################################
     return 0;
 }

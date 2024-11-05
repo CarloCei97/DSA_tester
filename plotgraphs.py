@@ -4,12 +4,18 @@ import os
 import sys
 from datetime import datetime
 
+# Ask the user whether they want to display the graphs or save them as screenshots
+choice = input("\nDo you want to (1) display the graphs or (2) save screenshots? Enter 1 or 2: ")
+
 # Check if a file path argument was provided
 if len(sys.argv) > 1:
     original_file_path = sys.argv[1]
 else:
     print("Error: No file path provided.")
     exit()
+
+# Extract the original file name without the extension for naming the subfolder
+original_file_name = os.path.splitext(os.path.basename(original_file_path))[0]
 
 # Load the original CSV file
 try:
@@ -21,6 +27,13 @@ except pd.errors.EmptyDataError:
 
 # Folder path for sampled data
 sampled_folder = "/Users/carlocei/Desktop/DS_A_Tester/log/"  # Update with correct folder path for sampled signals
+
+# Screenshot folder path based on the original file name
+screenshot_folder = f"/Users/carlocei/Desktop/DS_A_Tester/screenshots/{original_file_name}"  # Update path as needed
+
+# If saving screenshots, create the specific subfolder if it doesn't exist
+if choice == '2':
+    os.makedirs(screenshot_folder, exist_ok=True)
 
 # List all .csv files in the sampled folder
 sampled_files = [f for f in os.listdir(sampled_folder) if f.endswith('.csv')]
@@ -43,8 +56,9 @@ for sampled_file in sampled_files:
 
         # Format the sampled file name: remove '.csv' and replace underscores with spaces
         formatted_title_sampled = sampled_file.replace('_', ' ').replace('.csv', '')
-        formatted_title_original = original_file_path.split('/')[-1].split('.')[0]
+        formatted_title_original = original_file_name
         formatted_title_dimension = formatted_title_sampled.split(' ')[-1]
+        
         # Create subplots
         fig, axs = plt.subplots(2, 1, figsize=(10, 10), sharex=True)
 
@@ -65,8 +79,17 @@ for sampled_file in sampled_files:
         plt.xticks(rotation=45)
         plt.tight_layout()
 
-        # Show the plot
-        plt.show()
+        # Show or save based on user choice
+        if choice == '1':
+            plt.show()
+        elif choice == '2':
+            # Save the plot as a screenshot in the specific subfolder
+            screenshot_filename = os.path.join(screenshot_folder, f"{sampled_file.replace('.csv', '')}_screenshot.png")
+            plt.savefig(screenshot_filename, dpi=300)
+            print(f"Saved screenshot as {screenshot_filename}")
+
+        # Close the figure after saving or displaying
+        plt.close(fig)
 
     except pd.errors.EmptyDataError:
         print(f"Error: The file {sampled_file} is empty or invalid.")
