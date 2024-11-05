@@ -109,21 +109,22 @@ int main() {
         current.push_back(record.curr);    // Assuming record has a field for current
         voltage.push_back(record.volt);    // Assuming record has a field for voltage
     }
+/*
 // Perform downsampling using DWT for each variable separately and keep track of execution time
     auto start_time = std::chrono::high_resolution_clock::now();
     auto [wavelet_sampled_time_soc, wavelet_sampled_soc] = WaveletTransform::downsample(time_series, soc, waveletType, threshold);
     auto wavelet_time_soc = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start_time).count();
 
-    start_time = std::chrono::high_resolution_clock::now();
+    auto start_time = std::chrono::high_resolution_clock::now();
     auto [wavelet_sampled_time_volt, wavelet_sampled_volt] = WaveletTransform::downsample(time_series, voltage, waveletType, threshold);
     auto wavelet_time_volt = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start_time).count();
 
     start_time = std::chrono::high_resolution_clock::now();
     auto [wavelet_sampled_time_curr, wavelet_sampled_curr] = WaveletTransform::downsample(time_series, current, waveletType, threshold);
     auto wavelet_time_curr = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start_time).count();
-
+*/
 // Perform downsampling using LTTB for each variable separately and keep track of execution time
-    start_time = std::chrono::high_resolution_clock::now();
+    auto start_time = std::chrono::high_resolution_clock::now();
     auto [lttb_sampled_time_soc, lttb_sampled_soc] = DownsamplingAlgorithms::largestTriangleThreeBuckets(time_series, soc, n_out);
     auto lttb_time_soc = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start_time).count();
 
@@ -191,10 +192,12 @@ int main() {
 
     // Save the downsampled data to separate CSV files with only two columns: time and the respective downsampled variable
 
+/*
 // Wavelet downsampling files
     CSVHandler waveletHandler_soc("../log/DWT_sampled_soc.csv");
     CSVHandler waveletHandler_curr("../log/DWT_sampled_curr.csv");
     CSVHandler waveletHandler_volt("../log/DWT_sampled_volt.csv");
+*/
 
 // LTTB downsampling files
     CSVHandler lttbHandler_soc("../log/lttb_sampled_soc.csv");
@@ -228,10 +231,12 @@ int main() {
 
 // Save each downsampled dataset to its corresponding file with only two columns: time and the downsampled variable
 
+/*
 // Wavelet downsampled data
     waveletHandler_soc.saveToCSV(wavelet_sampled_time_soc, wavelet_sampled_soc);
     waveletHandler_curr.saveToCSV(wavelet_sampled_time_curr, wavelet_sampled_curr);
     waveletHandler_volt.saveToCSV(wavelet_sampled_time_volt, wavelet_sampled_volt);
+*/
 
 // LTTB downsampled data
     lttbHandler_soc.saveToCSV(lttb_sampled_time_soc, lttb_sampled_soc);
@@ -281,9 +286,11 @@ int main() {
     // Print the logfile with detailed durations for each variable
     std::ofstream logFile("/Users/carlocei/Desktop/DS_A_Tester/log/log.txt");
 
+/*
     logFile << "Discrete Wavelet Transform duration (soc): " << wavelet_time_soc << " seconds\n";
     logFile << "Discrete Wavelet Transform duration (curr): " << wavelet_time_curr << " seconds\n";
     logFile << "Discrete Wavelet Transform duration (volt): " << wavelet_time_volt << " seconds\n";
+*/
 
     logFile << "Largest Triangle Three Buckets duration (soc): " << lttb_time_soc << " seconds\n";
     logFile << "Largest Triangle Three Buckets duration (curr): " << lttb_time_curr << " seconds\n";

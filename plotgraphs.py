@@ -49,16 +49,16 @@ for sampled_file in sampled_files:
         fig, axs = plt.subplots(2, 1, figsize=(10, 10), sharex=True)
 
         # First subplot for the original signal
-        axs[0].plot(df1['time'], df1['soc'], marker=' ', linestyle='-', color='b')
-        axs[0].set_title(f'(Original Signal - {formatted_title_original} - {formatted_title_dimension} )')
-        axs[0].set_ylabel('SOC')
+        axs[0].plot(df1['time'], df1[formatted_title_dimension], marker=' ', linestyle='-', color='b')
+        axs[0].set_title(f'(Original Signal - {formatted_title_original}  {formatted_title_dimension} )')
+        axs[0].set_ylabel(formatted_title_dimension)
         axs[0].grid(True)
 
         # Second subplot for the sampled signal
         axs[1].plot(df2['Time'], df2['SoC'], marker=' ', linestyle='-', color='r')
         axs[1].set_title(f'(Sampled Signal - {formatted_title_sampled})')
         axs[1].set_xlabel('Time')
-        axs[1].set_ylabel('SOC')
+        axs[1].set_ylabel(formatted_title_dimension)
         axs[1].grid(True)
 
         # Adjust layout

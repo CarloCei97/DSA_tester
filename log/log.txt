@@ -1,18 +1,15 @@
-Discrete Wavelet Transform duration (soc): 0.00205596 seconds
-Discrete Wavelet Transform duration (curr): 0.0019895 seconds
-Discrete Wavelet Transform duration (volt): 0.00195992 seconds
-Largest Triangle Three Buckets duration (soc): 0.000648417 seconds
-Largest Triangle Three Buckets duration (curr): 0.000694375 seconds
-Largest Triangle Three Buckets duration (volt): 0.0007075 seconds
-Min-Max Downsampling duration (soc): 0.00114654 seconds
-Min-Max Downsampling duration (curr): 0.00122404 seconds
-Min-Max Downsampling duration (volt): 0.00123054 seconds
-Piecewise Aggregate Approximation duration (soc): 0.000241917 seconds
-Piecewise Aggregate Approximation duration (curr): 0.000235625 seconds
-Piecewise Aggregate Approximation duration (volt): 0.000235583 seconds
-Random Sampling duration (soc): 0.00639033 seconds
-Random Sampling duration (curr): 0.00635971 seconds
-Random Sampling duration (volt): 0.00639175 seconds
-Douglas-Peucker (RDP) duration (soc): 0.146627 seconds
-Douglas-Peucker (RDP) duration (curr): 0.553614 seconds
-Douglas-Peucker (RDP) duration (volt): 0.243437 seconds
+Largest Triangle Three Buckets duration (soc): 0.000512125 seconds
+Largest Triangle Three Buckets duration (curr): 0.000416834 seconds
+Largest Triangle Three Buckets duration (volt): 0.0003875 seconds
+Min-Max Downsampling duration (soc): 0.000640292 seconds
+Min-Max Downsampling duration (curr): 0.000712708 seconds
+Min-Max Downsampling duration (volt): 0.00065375 seconds
+Piecewise Aggregate Approximation duration (soc): 0.000120625 seconds
+Piecewise Aggregate Approximation duration (curr): 0.000122208 seconds
+Piecewise Aggregate Approximation duration (volt): 0.000121958 seconds
+Random Sampling duration (soc): 0.00264087 seconds
+Random Sampling duration (curr): 0.00250996 seconds
+Random Sampling duration (volt): 0.00250571 seconds
+Douglas-Peucker (RDP) duration (soc): 0.047467 seconds
+Douglas-Peucker (RDP) duration (curr): 0.208734 seconds
+Douglas-Peucker (RDP) duration (volt): 0.171956 seconds
