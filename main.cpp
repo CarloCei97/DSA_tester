@@ -1,47 +1,12 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <iomanip>
-#include <sstream>
 #include <filesystem>
 #include <cstdlib> //system()
 #include "include/CSVHandler.h"
 #include "include/DownsamplingAlgorithms.h"
 #include "include/WaveletTransform.h"
 namespace fs = std::filesystem;
-
-//#######################################################################################################
-//##################### handling time format conversion #################################################
-//#######################################################################################################
-
-// Function to parse a datetime string and convert it to a time_point
-std::chrono::system_clock::time_point parseDateTime(const std::string& datetime_str) {
-    std::tm tm = {};
-    std::istringstream ss(datetime_str);
-    ss >> std::get_time(&tm, "%Y-%m-%d %H:%M:%S");
-    auto tp = std::chrono::system_clock::from_time_t(std::mktime(&tm));
-
-    // Handle fractional seconds (nanoseconds)
-    size_t pos = datetime_str.find('.');
-    if (pos != std::string::npos) {
-        std::string fractional_seconds = datetime_str.substr(pos + 1);
-        long nanoseconds = std::stol(fractional_seconds);
-
-        // Convert time_point to a duration and add nanoseconds
-        tp += std::chrono::duration_cast<std::chrono::system_clock::duration>(std::chrono::nanoseconds(nanoseconds));
-    }
-
-    return tp;
-}
-
-// Function to convert a time_point to a double (Unix timestamp)
-double timePointToDouble(const std::chrono::system_clock::time_point& tp) {
-    auto duration = tp.time_since_epoch();
-    return std::chrono::duration_cast<std::chrono::seconds>(duration).count();
-}
-//#######################################################################################################
-//#######################################################################################################
-//#######################################################################################################
 
 
 int main() {
@@ -99,12 +64,8 @@ int main() {
     std::vector<double> voltage;
 
     for (const auto& record : records) {
-        // Convert 'datetime' string to time_point, then to double
-        auto time_point = parseDateTime(record.time); // Convert string to time_point
-        double time_value = timePointToDouble(time_point); // Convert time_point to double
-
         // Push values into corresponding vectors
-        time_series.push_back(time_value);
+        time_series.push_back(record.timeValue);
         soc.push_back(record.soc);
         current.push_back(record.curr);    // Assuming record has a field for current
         voltage.push_back(record.volt);    // Assuming record has a field for voltage
