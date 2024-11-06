@@ -26,10 +26,10 @@ except pd.errors.EmptyDataError:
     exit()
 
 # Folder path for sampled data
-sampled_folder = "/Users/carlocei/Desktop/DS_A_Tester/log/"  # Update with correct folder path for sampled signals
+sampled_folder = "../log/"  # Update with correct folder path for sampled signals
 
 # Screenshot folder path based on the original file name
-screenshot_folder = f"/Users/carlocei/Desktop/DS_A_Tester/screenshots/{original_file_name}"  # Update path as needed
+screenshot_folder = f"../screenshots/{original_file_name}"  # Update path as needed
 
 # If saving screenshots, create the specific subfolder if it doesn't exist
 if choice == '2':
