@@ -1,15 +1,15 @@
-Largest Triangle Three Buckets duration (soc): 0.00057525 seconds
-Largest Triangle Three Buckets duration (curr): 0.000599041 seconds
-Largest Triangle Three Buckets duration (volt): 0.000608041 seconds
-Min-Max Downsampling duration (soc): 0.00101996 seconds
-Min-Max Downsampling duration (curr): 0.00110879 seconds
-Min-Max Downsampling duration (volt): 0.00109896 seconds
-Piecewise Aggregate Approximation duration (soc): 0.000212625 seconds
-Piecewise Aggregate Approximation duration (curr): 0.000211958 seconds
-Piecewise Aggregate Approximation duration (volt): 0.000212792 seconds
-Random Sampling duration (soc): 0.00544025 seconds
-Random Sampling duration (curr): 0.0054315 seconds
-Random Sampling duration (volt): 0.00542033 seconds
-Douglas-Peucker (RDP) duration (soc): 0.0788079 seconds
-Douglas-Peucker (RDP) duration (curr): 0.450523 seconds
-Douglas-Peucker (RDP) duration (volt): 0.330329 seconds
+Largest Triangle Three Buckets duration (soc): 0.000639708 seconds
+Largest Triangle Three Buckets duration (curr): 0.000685375 seconds
+Largest Triangle Three Buckets duration (volt): 0.000697875 seconds
+Min-Max Downsampling duration (soc): 0.00114971 seconds
+Min-Max Downsampling duration (curr): 0.00123133 seconds
+Min-Max Downsampling duration (volt): 0.00122133 seconds
+Piecewise Aggregate Approximation duration (soc): 0.000239167 seconds
+Piecewise Aggregate Approximation duration (curr): 0.000236833 seconds
+Piecewise Aggregate Approximation duration (volt): 0.000235792 seconds
+Random Sampling duration (soc): 0.00672683 seconds
+Random Sampling duration (curr): 0.006533 seconds
+Random Sampling duration (volt): 0.00696796 seconds
+Douglas-Peucker (RDP) duration (soc): 0.146575 seconds
+Douglas-Peucker (RDP) duration (curr): 0.550407 seconds
+Douglas-Peucker (RDP) duration (volt): 0.243153 seconds

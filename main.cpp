@@ -23,7 +23,7 @@ int main() {
 
 //########################################## import data from file #########################################
     // Read data from CSV file
-    std::string folder_path = "/Users/carlocei/Desktop/DS_A_Tester/real_data/";
+    std::string folder_path = "../real_data/";
     std::vector<std::string> csv_files;
 
     // List CSV files in the folder
@@ -264,7 +264,7 @@ int main() {
 //############################# launch the script to plot the graphs ####################################
 
     // Launch the Python script to plot the graphs
-    std::string pythonScript = "/Users/carlocei/Desktop/DS_A_Tester/plotgraphs.py";  // Full path to script.py
+    std::string pythonScript = "../plotgraphs.py";  // Full path to script.py
     // Launch Python script with the path of the analyzed file as an argument
     std::string command = "python3 " + pythonScript + " " + selected_file;
     std::cout << command;
