@@ -233,7 +233,7 @@ int main() {
 //################################ save the duration times ##############################################
     std::cout << std::endl;
     // Print the logfile with detailed durations for each variable
-    std::ofstream logFile("/Users/carlocei/Desktop/DS_A_Tester/log/log(" + selected_file_name + ").txt");
+    std::ofstream logFile("../log/log(" + selected_file_name + ").txt");
 
     logFile << "Largest Triangle Three Buckets duration (soc): " << lttb_time_soc << " seconds\n";
     logFile << "Largest Triangle Three Buckets duration (curr): " << lttb_time_curr << " seconds\n";
