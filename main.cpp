@@ -15,7 +15,7 @@ int main() {
     const int n_out = 2000;
     //douglas algorithm
     const double variance_threshold = 10;
-    const double epsilon = 0.5;
+    const double epsilon = 0.7;
     //wavelet transform
     std::string waveletType = "Haar";
     double threshold = 0.5;
@@ -51,7 +51,8 @@ int main() {
     }
 
     // Read data from the selected CSV file
-    std::string selected_file = folder_path + csv_files[choice - 1];
+    std::string selected_file_name = csv_files[choice - 1];
+    std::string selected_file = folder_path + selected_file_name;
     CSVHandler csvHandler;
     csvHandler.readCSV(selected_file);
     const std::vector<Record>& records = csvHandler.getRecords();
@@ -232,7 +233,7 @@ int main() {
 //################################ save the duration times ##############################################
     std::cout << std::endl;
     // Print the logfile with detailed durations for each variable
-    std::ofstream logFile("/Users/carlocei/Desktop/DS_A_Tester/log/log.txt");
+    std::ofstream logFile("/Users/carlocei/Desktop/DS_A_Tester/log/log(" + selected_file_name + ").txt");
 
     logFile << "Largest Triangle Three Buckets duration (soc): " << lttb_time_soc << " seconds\n";
     logFile << "Largest Triangle Three Buckets duration (curr): " << lttb_time_curr << " seconds\n";
